@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <style> body, html { margin: 0; padding: 0; width: 100%; height: 100%; background: #000; overflow: hidden; } </style>
+</head>
+<body>
+    <div style="width:100%;height:100%;max-width:100%">
+        <div id="game"></div>
+    </div>
+    <script>
+        // Read the URL parameters passed from React (e.g., core=nes & rom=http://...)
+        const urlParams = new URLSearchParams(window.location.search);
+        const core = urlParams.get('core');
+        const romUrl = urlParams.get('rom');
+
+        // Configure EmulatorJS
+        window.EJS_player = '#game';
+        window.EJS_core = core; 
+        window.EJS_gameUrl = romUrl;
+        
+        // Point to the official CDN where the actual emulator engines are stored
+        window.EJS_pathtodata = 'https://cdn.emulatorjs.org/stable/data/';
+    </script>
+    <script src="https://cdn.emulatorjs.org/stable/data/loader.js"></script>
+</body>
+</html>
