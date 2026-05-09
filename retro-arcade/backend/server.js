@@ -9,7 +9,7 @@ const PORT = process.env.PORT || 5000;
 
 app.use(cors());
 
-// This line allows the frontend to access your ROMs, Images, and Custom Game folders
+// Serve static files from the public folder (ROMs, Images, and Custom Games)
 app.use('/static', express.static(path.join(__dirname, 'public')));
 
 // Set up the Dynamic Base URL for production vs local development
@@ -28,22 +28,30 @@ const games = [
     {
         id: "custom-001",
         title: "My First JS Game",
-        system: "custom", // We use 'custom' to skip the emulator in React
-        imageUrl: `${BASE_URL}/static/images/snake.jpg`,
-        // This points to the folder we created in the public directory
+        system: "custom",
+        imageUrl: `${BASE_URL}/static/images/custom-thumb.jpg`,
         gameUrl: `${BASE_URL}/static/my-game/index.html`, 
+        isCustom: true
+    },
+    {
+        id: "custom-002",
+        title: "Snake Retro",
+        system: "custom",
+        // This assumes you created the folder backend/public/snake-game/
+        imageUrl: `${BASE_URL}/static/images/snake-thumb.jpg`,
+        gameUrl: `${BASE_URL}/static/snake-game/index.html`, 
         isCustom: true
     }
 ];
 
 // --- API ROUTES ---
 
-// Get all games
+// Get all games for the React frontend
 app.get('/api/games', (req, res) => {
     res.json(games);
 });
 
-// Basic Health Check (To avoid the "Cannot GET /" error)
+// Root route to verify the server is live
 app.get('/', (req, res) => {
     res.send('Arcade Server is Running!');
 });
