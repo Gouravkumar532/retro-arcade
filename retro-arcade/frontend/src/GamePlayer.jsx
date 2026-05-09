@@ -20,9 +20,10 @@ function GamePlayer() {
    * 2. Otherwise, we load 'emulator.html' and pass it the ROM info.
    */
   const isCustom = game.system === 'custom';
-  
-  const iframeSrc = isCustom 
-    ? game.gameUrl 
+
+   // Use the gameUrl exactly as it comes from the backend (which includes the Render link)
+   const iframeSrc = isCustom 
+   ? game.gameUrl 
     : `/emulator.html?core=${game.system}&rom=${encodeURIComponent(game.romUrl)}`;
 
   return (
