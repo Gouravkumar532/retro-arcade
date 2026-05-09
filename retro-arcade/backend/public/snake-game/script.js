@@ -1,22 +1,26 @@
-const canvas = document.getElementById("snakeCanvas");
-const ctx = canvas.getContext("2d");
-
-const box = 20; // Size of one square
+// Move these variables to the top, but don't assign them yet
+let canvas, ctx, game;
+const box = 20;
 let score = 0;
-
-// 1. Define the Snake (an array of coordinates)
 let snake = [{ x: 9 * box, y: 10 * box }];
-
-// 2. Define the Food
 let food = {
     x: Math.floor(Math.random() * 19 + 1) * box,
     y: Math.floor(Math.random() * 19 + 1) * box
 };
+let d;
 
-let d; // Direction
+// Wait for the window to finish loading everything
+window.onload = function() {
+    canvas = document.getElementById("snakeCanvas");
+    ctx = canvas.getContext("2d");
+    
+    // Start the game loop only after we have the ctx
+    game = setInterval(draw, 100);
+    console.log("Game Started!");
+};
 
-// 3. Listen for key presses
 document.addEventListener("keydown", direction);
+
 function direction(event) {
     if(event.keyCode == 37 && d != "RIGHT") d = "LEFT";
     else if(event.keyCode == 38 && d != "DOWN") d = "UP";
@@ -24,30 +28,28 @@ function direction(event) {
     else if(event.keyCode == 40 && d != "UP") d = "DOWN";
 }
 
-// 4. The Draw Loop
 function draw() {
+    // Safety check: if ctx isn't ready, don't draw
+    if (!ctx) return;
+
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
     for(let i = 0; i < snake.length; i++) {
-        ctx.fillStyle = (i == 0) ? "#00ffcc" : "white"; // Head is green, body is white
+        ctx.fillStyle = (i == 0) ? "#00ffcc" : "white";
         ctx.fillRect(snake[i].x, snake[i].y, box, box);
     }
 
-    // Draw Food
     ctx.fillStyle = "red";
     ctx.fillRect(food.x, food.y, box, box);
 
-    // Old head position
     let snakeX = snake[0].x;
     let snakeY = snake[0].y;
 
-    // Move head based on direction
     if( d == "LEFT") snakeX -= box;
     if( d == "UP") snakeY -= box;
     if( d == "RIGHT") snakeX += box;
     if( d == "DOWN") snakeY += box;
 
-    // 5. Check if snake eats food
     if(snakeX == food.x && snakeY == food.y) {
         score++;
         food = {
@@ -55,19 +57,18 @@ function draw() {
             y: Math.floor(Math.random() * 19 + 1) * box
         };
     } else {
-        snake.pop(); // Remove the tail
+        snake.pop();
     }
 
     let newHead = { x: snakeX, y: snakeY };
 
-    // 6. Game Over Rules
     if(snakeX < 0 || snakeX >= canvas.width || snakeY < 0 || snakeY >= canvas.height || collision(newHead, snake)) {
         clearInterval(game);
         alert("GAME OVER! Score: " + score);
-        location.reload(); // Restart
+        location.reload();
     }
 
-    snake.unshift(newHead); // Add new head
+    snake.unshift(newHead);
 }
 
 function collision(head, array) {
@@ -76,5 +77,3 @@ function collision(head, array) {
     }
     return false;
 }
-
-let game = setInterval(draw, 100); // Run every 100ms
