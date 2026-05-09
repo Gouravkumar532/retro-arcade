@@ -2,30 +2,73 @@ import { useLocation, Link } from 'react-router-dom';
 
 function GamePlayer() {
   const location = useLocation();
-  const game = location.state?.game; // Get the game data passed from the Library
+  const game = location.state?.game;
 
-  if (!game) return <h2 style={{ color: 'white' }}>Game not found. Go back to the library.</h2>;
+  // Safety check if someone navigates to this URL directly without clicking a game
+  if (!game) {
+    return (
+      <div style={{ color: 'white', textAlign: 'center', padding: '50px' }}>
+        <h2>Game not found</h2>
+        <Link to="/" style={{ color: '#00ffcc' }}>Return to Library</Link>
+      </div>
+    );
+  }
 
-  // We pass the core and rom URL to our static emulator file
-  const emulatorSource = `/emulator.html?core=${game.system}&rom=${encodeURIComponent(game.romUrl)}`;
+  /** 
+   * LOGIC SWITCH:
+   * 1. If system is 'custom', we load your JS game directly from your server.
+   * 2. Otherwise, we load 'emulator.html' and pass it the ROM info.
+   */
+  const isCustom = game.system === 'custom';
+  
+  const iframeSrc = isCustom 
+    ? game.gameUrl 
+    : `/emulator.html?core=${game.system}&rom=${encodeURIComponent(game.romUrl)}`;
 
   return (
-    <div style={{ background: '#111', color: 'white', minHeight: '100vh', padding: '20px', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-      <div style={{ width: '100%', maxWidth: '800px', marginBottom: '20px' }}>
-        <Link to="/" style={{ color: '#00ffcc', textDecoration: 'none', fontSize: '18px' }}>← Back to Library</Link>
-        <h2 style={{ marginTop: '10px' }}>Now Playing: {game.title}</h2>
+    <div style={{ 
+      background: '#111', 
+      color: 'white', 
+      minHeight: '100vh', 
+      display: 'flex', 
+      flexDirection: 'column', 
+      alignItems: 'center',
+      padding: '20px' 
+    }}>
+      {/* Header Area */}
+      <div style={{ width: '100%', maxWidth: '800px', marginBottom: '15px' }}>
+        <Link to="/" style={{ color: '#00ffcc', textDecoration: 'none' }}>← Back to Library</Link>
+        <h1 style={{ fontSize: '24px', marginTop: '10px' }}>
+            {isCustom ? "🚀 Playing Custom Build: " : "🕹️ Now Playing: "} {game.title}
+        </h1>
       </div>
-      
-      {/* The iframe safely isolates the complex emulator code from React */}
-      <div style={{ width: '800px', height: '600px', backgroundColor: 'black', border: '4px solid #333', borderRadius: '8px' }}>
+
+      {/* The Game Frame */}
+      <div style={{ 
+        width: '800px', 
+        height: '600px', 
+        backgroundColor: 'black', 
+        border: '5px solid #333', 
+        borderRadius: '10px',
+        overflow: 'hidden',
+        boxShadow: '0 0 20px rgba(0,255,204,0.2)' 
+      }}>
         <iframe 
-          src={emulatorSource}
+          src={iframeSrc}
           width="100%" 
           height="100%" 
           frameBorder="0"
           allowFullScreen
+          title={game.title}
         ></iframe>
       </div>
+
+      {/* Helpful Hint */}
+      <p style={{ marginTop: '20px', color: '#888', fontSize: '14px' }}>
+        {isCustom 
+          ? "This is a native JavaScript game running on your Node server." 
+          : "Running via EmulatorJS (WebAssembly). Check your console for controls."}
+      </p>
     </div>
   );
 }
