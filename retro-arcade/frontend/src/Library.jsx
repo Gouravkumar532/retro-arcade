@@ -5,12 +5,12 @@ import axios from 'axios';
 function Library() {
   const [games, setGames] = useState([]);
 
-  useEffect(() => {
-    // This calls your Node.js server!
-    axios.get('https://my-arcade-backend.onrender.com/api/games')
-      .then(response => setGames(response.data))
-      .catch(error => console.error("Error fetching games:", error));
-  }, []);
+    useEffect(() => {
+    // Update this line with your EXACT Render URL
+    axios.get('https://retro-arcade-xd1l.onrender.com/api/games')
+        .then(response => setGames(response.data))
+        .catch(error => console.error("Error fetching games:", error));
+    }, []);
 
   return (
     <div style={{ padding: '20px', fontFamily: 'sans-serif', backgroundColor: '#111', color: 'white', minHeight: '100vh' }}>
